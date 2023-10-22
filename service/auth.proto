@@ -4,6 +4,7 @@ option go_package = "api/";
 
 service UserService {
   rpc CreateUser(UserCreateRequest) returns (UserCreateResponse);
+  rpc LoginUser(UserLoginRequest) returns (UserLoginResponse);
 }
 
 message User{
@@ -21,9 +22,25 @@ message UserCreateResponse{
   string message = 2;
   string id = 3;
   string email = 4;
+  string access_token = 5;
+  string refresh_token = 6;
 }
 
 message UserCreateRequest{
-  string email = 2;
-  string password = 3;
+  string email = 1;
+  string password = 2;
+}
+
+message UserLoginRequest{
+  string email = 1;
+  string password = 2;
+}
+
+message UserLoginResponse{
+  uint32 code = 1;
+  string message = 2;
+  string id = 3;
+  string email = 4;
+  string access_token = 5;
+  string refresh_token = 6;
 }
