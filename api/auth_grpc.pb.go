@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	SignUp(ctx context.Context, in *UserCreateRequest, opts ...grpc.CallOption) (*UserCreateResponse, error)
 	SignIn(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
+	GoogleAuth(ctx context.Context, in *UserGoogleRequest, opts ...grpc.CallOption) (*UserGoogleResponse, error)
 	RefreshToken(ctx context.Context, in *UserRefreshTokenRequest, opts ...grpc.CallOption) (*UserRefreshTokenResponse, error)
 }
 
@@ -53,6 +54,15 @@ func (c *userServiceClient) SignIn(ctx context.Context, in *UserLoginRequest, op
 	return out, nil
 }
 
+func (c *userServiceClient) GoogleAuth(ctx context.Context, in *UserGoogleRequest, opts ...grpc.CallOption) (*UserGoogleResponse, error) {
+	out := new(UserGoogleResponse)
+	err := c.cc.Invoke(ctx, "/UserService/GoogleAuth", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) RefreshToken(ctx context.Context, in *UserRefreshTokenRequest, opts ...grpc.CallOption) (*UserRefreshTokenResponse, error) {
 	out := new(UserRefreshTokenResponse)
 	err := c.cc.Invoke(ctx, "/UserService/RefreshToken", in, out, opts...)
@@ -68,6 +78,7 @@ func (c *userServiceClient) RefreshToken(ctx context.Context, in *UserRefreshTok
 type UserServiceServer interface {
 	SignUp(context.Context, *UserCreateRequest) (*UserCreateResponse, error)
 	SignIn(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
+	GoogleAuth(context.Context, *UserGoogleRequest) (*UserGoogleResponse, error)
 	RefreshToken(context.Context, *UserRefreshTokenRequest) (*UserRefreshTokenResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
@@ -81,6 +92,9 @@ func (UnimplementedUserServiceServer) SignUp(context.Context, *UserCreateRequest
 }
 func (UnimplementedUserServiceServer) SignIn(context.Context, *UserLoginRequest) (*UserLoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
+}
+func (UnimplementedUserServiceServer) GoogleAuth(context.Context, *UserGoogleRequest) (*UserGoogleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GoogleAuth not implemented")
 }
 func (UnimplementedUserServiceServer) RefreshToken(context.Context, *UserRefreshTokenRequest) (*UserRefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
@@ -134,6 +148,24 @@ func _UserService_SignIn_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GoogleAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserGoogleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GoogleAuth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserService/GoogleAuth",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GoogleAuth(ctx, req.(*UserGoogleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserRefreshTokenRequest)
 	if err := dec(in); err != nil {
@@ -166,6 +198,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignIn",
 			Handler:    _UserService_SignIn_Handler,
+		},
+		{
+			MethodName: "GoogleAuth",
+			Handler:    _UserService_GoogleAuth_Handler,
 		},
 		{
 			MethodName: "RefreshToken",
