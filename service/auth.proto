@@ -5,6 +5,7 @@ option go_package = "api/";
 service UserService {
   rpc SignUp(UserCreateRequest) returns (UserCreateResponse);
   rpc SignIn(UserLoginRequest) returns (UserLoginResponse);
+  rpc GoogleAuth(UserGoogleRequest) returns(UserGoogleResponse);
   rpc RefreshToken(UserRefreshTokenRequest) returns (UserRefreshTokenResponse);
 }
 
@@ -54,4 +55,18 @@ message UserRefreshTokenResponse{
   uint32 code = 1;
   string message = 2;
   string access_token = 3;
+}
+
+message UserGoogleRequest{
+  string email = 1;
+  string password = 2;
+}
+
+message UserGoogleResponse{
+  uint32 code = 1;
+  string message = 2;
+  string id = 3;
+  string email = 4;
+  string access_token = 5;
+  string refresh_token = 6;
 }
