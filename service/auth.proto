@@ -58,8 +58,7 @@ message UserRefreshTokenResponse{
 }
 
 message UserGoogleRequest{
-  string email = 1;
-  string password = 2;
+  uint32 code = 1;
 }
 
 message UserGoogleResponse{
