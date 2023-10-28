@@ -26,6 +26,7 @@ type UserServiceClient interface {
 	SignIn(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
 	GoogleAuth(ctx context.Context, in *UserGoogleRequest, opts ...grpc.CallOption) (*UserGoogleResponse, error)
 	RefreshToken(ctx context.Context, in *UserRefreshTokenRequest, opts ...grpc.CallOption) (*UserRefreshTokenResponse, error)
+	CheckUserID(ctx context.Context, in *UserCheckIdRequest, opts ...grpc.CallOption) (*UserCheckIdResponse, error)
 }
 
 type userServiceClient struct {
@@ -72,6 +73,15 @@ func (c *userServiceClient) RefreshToken(ctx context.Context, in *UserRefreshTok
 	return out, nil
 }
 
+func (c *userServiceClient) CheckUserID(ctx context.Context, in *UserCheckIdRequest, opts ...grpc.CallOption) (*UserCheckIdResponse, error) {
+	out := new(UserCheckIdResponse)
+	err := c.cc.Invoke(ctx, "/UserService/CheckUserID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -80,6 +90,7 @@ type UserServiceServer interface {
 	SignIn(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
 	GoogleAuth(context.Context, *UserGoogleRequest) (*UserGoogleResponse, error)
 	RefreshToken(context.Context, *UserRefreshTokenRequest) (*UserRefreshTokenResponse, error)
+	CheckUserID(context.Context, *UserCheckIdRequest) (*UserCheckIdResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -98,6 +109,9 @@ func (UnimplementedUserServiceServer) GoogleAuth(context.Context, *UserGoogleReq
 }
 func (UnimplementedUserServiceServer) RefreshToken(context.Context, *UserRefreshTokenRequest) (*UserRefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
+}
+func (UnimplementedUserServiceServer) CheckUserID(context.Context, *UserCheckIdRequest) (*UserCheckIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckUserID not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -184,6 +198,24 @@ func _UserService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_CheckUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserCheckIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CheckUserID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserService/CheckUserID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CheckUserID(ctx, req.(*UserCheckIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -206,6 +238,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RefreshToken",
 			Handler:    _UserService_RefreshToken_Handler,
+		},
+		{
+			MethodName: "CheckUserID",
+			Handler:    _UserService_CheckUserID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
