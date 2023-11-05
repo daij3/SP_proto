@@ -1,0 +1,57 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option go_package = "api/";
+
+service ContentService {
+  rpc CreateContent(CreateContentRequest) returns (CreateContentResponse);
+  rpc CreateCategory(CreateCategoryRequest) returns(CreateCategoryResponse);
+  rpc ContentView(ViewContentRequest) returns(ViewContentResponse);
+}
+
+message Content {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  bytes image = 4;
+  bytes video = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp deleted_at = 7;
+}
+
+message Category {
+  string id = 1;
+  string name = 2;
+}
+
+message CreateCategoryRequest{
+  string id = 1;
+  string name = 2;
+}
+
+message CreateCategoryResponse{
+  string message = 1;
+}
+
+message CreateContentRequest{
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  bytes video = 5;
+  google.protobuf.Timestamp created_at = 6;
+  map<string, Category> content_map = 7;
+
+}
+
+
+message CreateContentResponse{
+  string message = 1;
+}
+
+message ViewContentResponse{
+  repeated Content content = 1;
+  repeated Category category = 2;
+}
+
+message ViewContentRequest{
+  string amount_content = 1;
+}
